@@ -7,8 +7,8 @@ export async function createAdmin(req, res) {
         console.log(req.body);
 
         const hashedPassword = await bcrypt.hash(Password, 10)
-
         const newAdmin = new Admin({ EmailId, Password: hashedPassword });
+        
         await newAdmin.save();
 
         res.status(200).json({ message: newAdmin });
