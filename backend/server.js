@@ -1,22 +1,21 @@
 import express, { json } from 'express';
 const app = express();
 import { config } from 'dotenv';
-import adminRoute from './routes/adminRoute.js';
-import login from './routes/adminRoute.js';
+import cors from 'cors';
 
-
+import Admin from './routes/adminRoute.js';
 
 config();
 app.use(json());
+app.use(cors());
 
 
 import connectDB from './dbconnection/db.js';
+
 connectDB();
 
 
-app.use('/admin', adminRoute);
-app.use('/login', login);
-
+app.use('/admin', Admin);
 
 
 const port = process.env.PORT || 5000;

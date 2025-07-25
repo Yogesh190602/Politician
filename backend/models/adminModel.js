@@ -11,9 +11,23 @@ const lastElection = new mongoose.Schema({
     Winner: { type: String, },
     Date: { type: Date, },
 
-})
+});
 
-const login = mongoose.model('Admin', adminLogin);
-const LastElection = mongoose.model('Admin', adminLogin);
 
-module.exports = { login, LastElection };
+const nextElection = new mongoose.Schema({
+    Date: { type: Date, },
+    Candidates: { type: String, },
+});
+
+const electionDay = new mongoose.Schema({
+    Date: { type: Date, },
+    Candidates: { type: String, },
+    Votes: { type: Number, },
+    Winner: { type: String, },
+
+});
+
+export const Admin = mongoose.model('Admin', adminLogin);
+export const LastElection = mongoose.model('LastElection', lastElection);
+export const NextElection = mongoose.model('NextElection', nextElection);
+export const ElectionDay = mongoose.model('ElectionDay', electionDay);
