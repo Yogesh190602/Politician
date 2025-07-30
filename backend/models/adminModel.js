@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const adminLogin = new mongoose.Schema({
     EmailId: { type: String, required: true },
-    Password: { type: String, Required: true },
+    Password: { type: String, required: true },
 });
 
 const lastElection = new mongoose.Schema({

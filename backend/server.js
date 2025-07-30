@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import cors from 'cors';
 
 import Admin from './routes/adminRoute.js';
+import User from "./routes/userRoute.js";
 
 config();
 app.use(json());
@@ -11,11 +12,11 @@ app.use(cors());
 
 
 import connectDB from './dbconnection/db.js';
-
 connectDB();
 
 
 app.use('/admin', Admin);
+app.use('/user', User)
 
 
 const port = process.env.PORT || 5000;
