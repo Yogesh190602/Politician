@@ -13,8 +13,10 @@ export async function registerUser(req, res) {
         const hashedPassword = await bcrypt.hash(Password, 10);
 
         const newUser = new User({ Username, EmailId, Password: hashedPassword, Phone });
+
         await newUser.save(); 
-        return res.status(200).json({message: newUser, message2: "User created"})
+
+        return res.status(200).json({message:"User created", newUser});
     }
 
     catch(err){
@@ -47,23 +49,20 @@ export async function userLogin(req, res) {
 
         //tokengeneration
 
-        const token = generateToken ({ EmailId: user.EmailId, Password: user.Password })
+        const token = generateToken ({ EmailId: user.EmailId, Username: user.Username })
 
-        res.json({token})
+        return res.status(200).json({message: "Login successful", token});
 
     };
+
+    
 
        
- export const getDashboard = (req, res) => {
+//  export const getDashboard = (req, res) => {
 
-        res.json({ message: `Welcome, ${req.user.EmailId}`, user: req.user });
-    };
-
-
-
-
-        // return res.status(200).json({message: "Login successful"});
-
+//         res.json({ message: `Welcome, ${req.user.EmailId}`, user: req.user });
+        
+//     };
 
 
 
