@@ -32,6 +32,7 @@ const Register = () => {
     console.log(data);
 
     if (response.ok) {
+        localStorage.setItem("token", data.token);
       alert("User created");
       navigate("/dashboard");
     } else {

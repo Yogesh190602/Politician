@@ -8,6 +8,6 @@ export const generateToken = (payload, expiresIn = '1h') => {
     
 }
 
-// export function verifyToken (token){
-//     return jwt.verify(token, process.env.JWT_SECRET);
-// }
+export function verifyToken (token){
+    return jwt.verify(token, process.env.JWT_SECRET);
+}

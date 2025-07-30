@@ -14,6 +14,11 @@ export async function registerUser(req, res) {
 
         const newUser = new User({ Username, EmailId, Password: hashedPassword, Phone });
 
+        const existingUser = await User.findOne({ EmailId });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
         await newUser.save(); 
 
         return res.status(200).json({message:"User created", newUser});
@@ -49,11 +54,22 @@ export async function userLogin(req, res) {
 
         //tokengeneration
 
-        const token = generateToken ({ EmailId: user.EmailId, Username: user.Username })
+        const token = generateToken ({ userId: user._id, EmailId: user.EmailId, Username: user.Username })
 
         return res.status(200).json({message: "Login successful", token});
 
     };
+
+
+    export async function users (req, res) {
+        try {
+            const users = await User.find();
+            return res.status(200).json({ users });
+        }
+        catch(err){
+            return res.status(500).json({message: "unable to get user"})
+        }
+    }
 
     
 
@@ -72,9 +88,11 @@ export async function userLogin(req, res) {
 
 export async function createFunds (req, res) {
     try {
+        
         const UserFunds = new Funds(req.body);
+
         await UserFunds.save();
-        return res.status(200).json({ Funds });
+        return res.status(200).json({ UserFunds });
     }
     catch(err){
         return res.status(500).json({message: "unable to create funds"})
