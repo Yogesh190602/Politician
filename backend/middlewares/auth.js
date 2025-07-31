@@ -1,13 +1,45 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
+import jwt from "jsonwebtoken";
 
-export const generateToken = (payload, expiresIn = '1h') => {
+import {config} from "dotenv";
+config();
 
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
-    
+
+const secret = process.env.SECRET_KEY
+
+export function generateToken (user ) {
+    const payload = {
+
+
+        EmailId: user.EmailId, Username: user.Username, userId: user._id}
+
+        return jwt.sign(payload, secret, {expiresIn: "1h"}) 
+
+        
+        
 }
 
-export function verifyToken (token){
-    return jwt.verify(token, process.env.JWT_SECRET);
+console.log("JWT Secret:", secret);
+
+
+export function verifyToken(req, res, next) {
+
+    //   const token = req.cookies.token;
+
+    const authHeader = req.headers.authorization;
+    const token = authHeader.split(" ")[1];
+
+    if (!token){
+        return res.status(401).json({message: "No token provided"});
+    }
+
+    try {
+        const decoded = jwt.verify(token, secret);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.error("verify token error", error.message);
+        
+        return res.status(403).json({message: "Invalid token"});
+    }
+    
 }

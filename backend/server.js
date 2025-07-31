@@ -2,13 +2,21 @@ import express, { json } from 'express';
 const app = express();
 import { config } from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+
+app.use(cookieParser());
 
 import Admin from './routes/adminRoute.js';
 import User from "./routes/userRoute.js";
 
 config();
+
 app.use(json());
-app.use(cors());
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 
 import connectDB from './dbconnection/db.js';
