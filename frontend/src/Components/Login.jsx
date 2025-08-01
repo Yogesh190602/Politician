@@ -25,15 +25,33 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ EmailId, Password }),
+        credentials: "include"
       });
 
       if (response.ok) {
-        navigate("/dashboard");
+
+        const profileResponse = await fetch("http://localhost:5000/user/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!profileResponse.ok) {
+          alert("Failed to fetch user profile");
+          return;
+        }
+
+        const data = await profileResponse.json();
+        const role = data.role;
+        
+        if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         alert("Login failed");
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 

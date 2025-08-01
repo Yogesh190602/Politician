@@ -1,58 +1,85 @@
-import {Admin, ElectionDay, LastElection, NextElection} from '../models/adminModel.js';
+import { ElectionDay, LastElection, NextElection} from '../models/adminModel.js';
 
-import bcrypt from 'bcrypt';
+import { User } from "../models/userModel.js";
+// import { generateToken } from "../middlewares/auth.js";
 
+import bcrypt from "bcrypt";
 
 export async function createAdmin(req, res) {
-    try {
+  try {
+    const { EmailId, Password } = req.body;
 
-        const { EmailId, Password } = req.body;
+    const existingAdmin = await User.findOne({ EmailId });
+        if (existingAdmin) {
+            return res.status(400).json({ message: "Admin already exists" });
+        }
 
-        const hashedPassword = await bcrypt.hash(Password, 10)
-        const newAdmin = new Admin({ EmailId, Password: hashedPassword });
-        
-        await newAdmin.save();
+    const hashedPassword = await bcrypt.hash(Password, 10);
+    const newAdmin = new User({
+      EmailId,
+      Password: hashedPassword,
+      role: "admin",
+    });
 
-        return res.status(200).json({ message: newAdmin });
+    await newAdmin.save();
 
-    }
-    catch (error) {
-        return res.status(500).error('admin creation failed')
-    }
-
+    return res.status(200).json({ message: newAdmin });
+  } catch (error) {
+    console.log("Admin creation error",error);
+    
+    return res.status(500).json({ message: "Admin creation failed", error: error.message });
+  }
 }
 
-export async function login(req, res) {
-    try {
-        const { EmailId, Password } = req.body;
+// export async function login(req, res) {
+//   try {
+//     const { EmailId, Password } = req.body;
 
-        if (!EmailId || !Password) {
-            console.log("Missing email or password");
-            return res.status(400).json({ message: "Email and password are required" });
-        }
+//     if (!EmailId || !Password) {
+//       console.log("Missing email or password");
+//       return res
+//         .status(400)
+//         .json({ message: "Email and password are required" });
+//     }
 
-        const admin = await Admin.findOne({ EmailId });
-        if (!admin) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+//     const admin = await User.findOne({ EmailId });
+//     if (!admin) {
+//       return res.status(401).json({ message: "Invalid credentials" });
+//     }
 
-        const isPasswordValid = await bcrypt.compare(Password, admin.Password);
-        if (!isPasswordValid) {  
-            return res.status(401).json({ message: 'Invalid password' });
-        }
+//     const isPasswordValid = await bcrypt.compare(Password, admin.Password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Invalid password" });
+//     }
 
-        return res.status(200).json({ message: 'Login successful' });
+//     const token = generateToken({
+//       userId: admin._id,
+//       EmailId: admin.EmailId,
+//       role: admin.role,
+//     });
 
-    }
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: false,
+//       sameSite: "Lax",
+//       maxAge: 3600000,
+//       path: "/",
+//     });
 
-    catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
-    }
+//     return res.status(200).json({ message: "Login successful" });
+//   } catch (error) {
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// }
 
-}
+
+// export async function getUser(req, res) {
+//     const {EmailId, role} = req.user
+//     return res.status(200).json({EmailId, role});
+// }
+
 
 //lastelection
-
 
 export async function lastelectionDetails(req , res) {
     try {
@@ -65,7 +92,7 @@ export async function lastelectionDetails(req , res) {
         return res.status(500).json({ message: 'unable to add details' });
 
     }
-    
+
 }
 
 export async function getlastelectionDetails(req, res) {
@@ -77,9 +104,8 @@ export async function getlastelectionDetails(req, res) {
     catch (error) {
         res.status(500).json({ message: 'unable to get details' });
     }
-    
-}
 
+}
 
 //nextelection
 
@@ -117,7 +143,7 @@ export async function electionDay(req, res) {
     catch(error) {
         res.status(500).json({ message: 'unable to add details' });
     }
-    
+
 }
 
 export async function getElectionDay (req, res) {

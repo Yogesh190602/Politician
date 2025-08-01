@@ -9,15 +9,14 @@ export async function registerUser(req, res) {
   try {
     const { Username, EmailId, Password, Phone } = req.body;
 
-    const hashedPassword = await bcrypt.hash(Password, 10);
-
-    const newUser = new User({ Username, EmailId, Password: hashedPassword, Phone,
-    });
-
     const existingUser = await User.findOne({ EmailId });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    const newUser = new User({ Username, EmailId, Password: hashedPassword, Phone, role: "user" });
 
     await newUser.save();
 
@@ -25,6 +24,7 @@ export async function registerUser(req, res) {
   } catch (err) {
     return res.status(500).json({ message: "unable to create user" });
   }
+
 }
 
 //Login
@@ -51,9 +51,7 @@ export async function userLogin(req, res) {
 
   //tokengeneration
 
-  const token = generateToken({ userId: user._id, EmailId: user.EmailId, Username: user.Username,
-
-  });
+  const token = generateToken({ userId: user._id, EmailId: user.EmailId, Username: user.Username, role: user.role });
 
   res.cookie("token", token, {
     httpOnly: true,
@@ -63,8 +61,13 @@ export async function userLogin(req, res) {
     path: "/",
   });
 
-  return res.status(200).json({ message: "Login successful", token });
+  return res.status(200).json({ message: "Login successful", role: user.role, Username: user.Username });
   
+}
+//get Username
+export async function getUser(req, res) {
+    const {Username, EmailId, role} = req.user
+    return res.status(200).json({EmailId, Username, role});
 }
 
 
@@ -78,13 +81,19 @@ export async function users(req, res) {
   }
 }
 
-//  export const getDashboard = (req, res) => {
 
-//         res.json({ message: `Welcome, ${req.user.EmailId}`, user: req.user });
 
-//     };
 
-//Funds
+
+
+
+
+
+
+
+
+
+
 
 export async function createFunds(req, res) {
   try {

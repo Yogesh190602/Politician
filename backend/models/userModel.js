@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 
 const userRegister = new mongoose.Schema({
-    Username : {type: String, requires: true},
+    Username : {type: String, required: function() { return this.role === 'user'; }},
     EmailId : {type: String, required : true},
     Password : {type: String, required: true},
-    Phone : {type: Number, required : true},
+    Phone : {type: Number, required : function() { return this.role === 'user'; }},
+     role: { 
+    type: String, 
+    enum: ["user", "admin"], 
+    default: "user" 
+  }
+
+    
 });
 
 const funds = new mongoose.Schema({

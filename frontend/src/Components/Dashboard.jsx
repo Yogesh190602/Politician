@@ -1,15 +1,45 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-export default function Dashboard() {
+const Dashboard = () => {
 
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(()=> {
+
+    const fetchUserProfile = async () => {
+
+      try{
+      
+      const response = await fetch("http://localhost:5000/user/profile", {
+      method: "GET",
+        credentials: "include",
+      })
+
+      if(response.ok) {
+        const data = await response.json();
+        setUser(data);
+      }
+
+      else{
+        console.log("failed to fetch user data");
+      }}
+      catch(err){
+        console.log(err);
+      }
+    }
+
+    fetchUserProfile();
+
+  }, [])
+
+      
 
   
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-around" }}>
-        <h1>Username</h1>
+
+        <h1 >Welcome {user?.Username }</h1>
         <p>change password</p>
         <button>Logout</button>
       </div>
@@ -29,5 +59,4 @@ export default function Dashboard() {
   );
 }
 
-
-
+export default Dashboard

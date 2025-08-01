@@ -9,24 +9,15 @@ const secret = process.env.SECRET_KEY
 export function generateToken (user ) {
     const payload = {
 
-
-        EmailId: user.EmailId, Username: user.Username, userId: user._id}
-
-        return jwt.sign(payload, secret, {expiresIn: "1h"}) 
-
-        
-        
+        EmailId: user.EmailId, Username: user.Username, userId: user._id, role: user.role}
+        return jwt.sign(payload, secret, {expiresIn: "1d"})    
+       
 }
-
-console.log("JWT Secret:", secret);
 
 
 export function verifyToken(req, res, next) {
 
-    //   const token = req.cookies.token;
-
-    const authHeader = req.headers.authorization;
-    const token = authHeader.split(" ")[1];
+      const token = req.cookies.token;
 
     if (!token){
         return res.status(401).json({message: "No token provided"});
@@ -42,4 +33,13 @@ export function verifyToken(req, res, next) {
         return res.status(403).json({message: "Invalid token"});
     }
     
+}
+
+export function isAdmin(req, res, next) {
+    if (req.user.role !== "admin"){
+        return res.status(400).json({message: "Access denied, admins only"})
+    }
+    else {
+        next();
+    }
 }
