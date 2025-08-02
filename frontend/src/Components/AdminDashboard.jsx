@@ -1,84 +1,62 @@
-import { useState, useEffect } from "react";
-import { electionDay } from "../../../backend/controllers/adminControllers";
+import { useState } from "react";
+import UserList from "./UserList.jsx";
+import LastElection from "./LastElections.jsx";
+import NextElection from "./NextElection.jsx";
+import ElectionDay from "./ElectionDay.jsx";
+
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
-
-  const [elections, setElections] = useState([]);
-
-  useEffect(() => {
-    const profile = async () => {
-      try {
-        const profileResponse = await fetch(
-          "http://localhost:5000/user/allUsers",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        const data = await profileResponse.json();
-        setUsers(data.users);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    profile();
-  }, []);
-
-  useEffect(() => {
-    const getLast = async () => {
-      try {
-        const lastRes = await fetch(
-          "http://localhost:5000/admin/lastElection",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        if (lastRes.ok) {
-          const data = await lastRes.json();
-          setElections(data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    getLast();
-  }, []);
-
+  const [activeSection, setActiveSection] = useState(null); // 'users' or 'elections'
 
   return (
-    <div>
-      <h1>Admin</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-center text-violet-600 mb-8">Admin Dashboard</h1>
 
-      <div>
-        <h1>All users</h1>
-        {users.map((user, index) => (
-          <div key={index}>
-            <p> {user.Username}</p>
-          </div>
-        ))}
+      {/* Buttons */}
+      <div className="flex justify-center gap-20 mb-10">
+        <button
+          onClick={() => setActiveSection("users")}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          All Users
+        </button>
+
+        <button
+          onClick={() => setActiveSection("lastelections")}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          Last Elections
+        </button>
+
+        <button
+          onClick={() => setActiveSection("nextelection")}
+          className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          Next Election
+        </button>
+
+         <button
+          onClick={() => setActiveSection("electionday")}
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          Election Day
+        </button>
+
+
       </div>
 
-      <div>
-        <h1>last election</h1>
-      </div>    
+      {/* Conditional rendering */}
+      <div className="flex justify-center">
+        {activeSection === "users" && <UserList />}
+        {activeSection === "lastelections" && <LastElection />}
+        {activeSection === "nextelection" && <NextElection />}
+        {activeSection === "electionday" && <ElectionDay />}
 
-      {elections.map((election, index) => (
-        <div key={index}>
-          <p> {election.Candidates}</p>
-        </div>
-      ))}
-
-
-
+      </div>
     </div>
-
-    
   );
 };
 
 export default AdminDashboard;
+
+

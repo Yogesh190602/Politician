@@ -17,6 +17,7 @@ const electionDay = new mongoose.Schema({
   Candidates: { type: String },
   Votes: { type: Number },
   Winner: { type: String },
+  CreatedAt: { type: Date, default: Date.now },
 });
 
 export const LastElection = mongoose.model("LastElection", lastElection);
