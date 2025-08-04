@@ -13,11 +13,26 @@ const inputStyle = {
 };
 
 const Register = () => {
-  const [Username, setUsername] = useState('');
-  const [EmailId, setEmailId] = useState('');
-  const [Password, setPassword] = useState('');
-  const [Phone, setPhone] = useState('');
+  // const [Username, setUsername] = useState('');
+  // const [EmailId, setEmailId] = useState('');
+  // const [Password, setPassword] = useState('');
+  // const [Phone, setPhone] = useState('');
+  const [data, setData] = useState({
+    Username: "",
+    EmailId: "",
+    Password: "",
+    Phone: ""
+  });
   const navigate = useNavigate();
+
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value
+      }));    
+    };
+  
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +40,7 @@ const Register = () => {
     const response = await fetch("http://localhost:5000/user/createUser", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ Username, EmailId, Password, Phone }),
+      body: JSON.stringify(data),
     });
 
     const data = await response.json();
@@ -67,32 +82,32 @@ const Register = () => {
             id="Username"
             type="text"
             placeholder="Username"
-            value={Username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={data.Username}
+            onChange={handleChange}
             style={inputStyle}
           />
           <input
             id="EmailId"
             type="email"
             placeholder="Email"
-            value={EmailId}
-            onChange={(e) => setEmailId(e.target.value)}
+            value={data.EmailId}
+            onChange={handleChange}
             style={inputStyle}
           />
           <input
             id="Password"
             type="password"
             placeholder="Password"
-            value={Password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={data.Password}
+            onChange={handleChange}
             style={inputStyle}
           />
           <input
             id="Phone"
             type="text"
             placeholder="Phone"
-            value={Phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={data.Phone}
+            onChange={handleChange}
             style={inputStyle}
           />
           <button

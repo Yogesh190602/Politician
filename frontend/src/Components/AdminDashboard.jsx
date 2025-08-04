@@ -4,7 +4,6 @@ import LastElection from "./LastElections.jsx";
 import NextElection from "./NextElection.jsx";
 import ElectionDay from "./ElectionDay.jsx";
 
-
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null); // 'users' or 'elections'
 
@@ -42,7 +41,6 @@ const AdminDashboard = () => {
           Election Day
         </button>
 
-
       </div>
 
       {/* Conditional rendering */}
@@ -57,6 +55,8 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
 
+
+
+export default AdminDashboard;
 

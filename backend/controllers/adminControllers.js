@@ -56,6 +56,31 @@ export async function getlastelectionDetails(req, res) {
 
 }
 
+
+export async function editElection(req, res) {
+
+    try {
+        const updatedElection = await ElectionDay.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        if (!updatedElection) {
+            return res.status(404).json({ message: 'Election not found' });
+        }
+        return res.status(200).json({ updatedElection });
+    }
+
+    catch (error) {
+        return res.status(500).json({ message: 'unable to update details' });
+    }
+    
+}
+
+
+
+
+
 //nextelection
 
 export async function nextelectionDetails(req , res) {
