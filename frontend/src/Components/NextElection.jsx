@@ -5,35 +5,56 @@ const nextElectionDetails = () => {
 
   useEffect(() => {
     const getNextElection = async () => {
-      const nextElection = await fetch(
-        "http://localhost:5000/admin/getnextelectionDetails",
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const data = await nextElection.json();
-      setNextElec(data.getNextElec);
-    };
+      try {
+        const nextElection = await fetch(
+          "http://localhost:5000/admin/getElectionDay",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
+        const data = await nextElection.json();
+        console.log("Next Election Data:", data.getElecDay);
+
+        if (data.getElecDay?.length > 0) {
+          const sorted = data.getElecDay.sort(
+            (a, b) => new Date(b.Date) - new Date(a.Date)
+          )[0];
+          setNextElec(sorted);
+        }
+
+        // const sorted = data.getElecDay.sort(
+        //   (a, b) => new Date(b.Date) - new Date(a.Date)
+        // )[0];
+        // // setNextElec(sorted);
+
+        // setNextElec([sorted]);
+      } catch (err) {
+        console.error("Unable to fetch next election details", err);
+      }
+    };
     getNextElection();
   }, []);
 
   return (
     <div>
-      <div>
-        <h1>Next Election</h1>
-      </div>
-      <div>
-        <ul>
-          {nextElec.map((nextelection) => (
-            <li key={nextelection._id}>
-              <p>Date: {new Date(nextelection.Date).toLocaleDateString("en-GB")}</p>
-              <p>Applied Candidates: {nextelection.Candidates}</p>
-            </li>
+      {nextElec.map((election) => (
+        <div>
+          <h2>date : {new Date(election.Date).toLocaleDateString("en-GB")}</h2>
+        </div>
+      ))}
+
+      {nextElec?.Candidates?.length > 0 && (
+        <div>
+          <h1>Applied Candidates</h1>
+          {nextElec.Candidates.map((c) => (
+            <div key={c._id}>
+              <p>{c.name}</p>
+            </div>
           ))}
-        </ul>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

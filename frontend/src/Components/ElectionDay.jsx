@@ -1,179 +1,222 @@
 import { useState, useEffect } from "react";
 
-const ElectionDay = () => {
-  const [addElectionDay, setAddElectionDay] = useState({
-    Date: "",
-    Candidates: "",
-    Votes: "",
-    Winner: "",
-  });
 
-  const [elecData, setElecData] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState(null);
+export default function ElectionManager() {
+  const [latestElection, setLatestElection] = useState(null);
+  const [showDateInput, setShowDateInput] = useState(false);
+  const [newDate, setNewDate] = useState("");
+  const [showCandidateInput, setShowCandidateInput] = useState(false);
+  const [candidateName, setCandidateName] = useState("");
+  const [candidatesList, setCandidatesList] = useState(false);
+  const [showVotesList, setShowVotesList] = useState(false);
+  
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAddElectionDay((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const url = isEditing
-      ? `http://localhost:5000/admin/editElection/${editId}`
-      : "http://localhost:5000/admin/electionDay";
-
-    const method = isEditing ? "PUT" : "POST";
-
-    const response = await fetch(url, {
-      method,
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(addElectionDay),
-    });
-
-    const data = await response.json();
-    console.log(data);
-
-    setAddElectionDay({
-      Date: "",
-      Candidates: "",
-      Votes: "",
-      Winner: "",
-    });
-    setEditId(null);
-    setIsEditing(false);
-    fetchElectionData();
-  };
-
-  const fetchElectionData = async () => {
-    const elecresponse = await fetch(
-      "http://localhost:5000/admin/getElectionDay"
-    );
-
-    const data = await elecresponse.json();
-
-    const sorted = data.getElecDay.sort(
-      (a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt)
-    )[0];
-
-    setElecData([sorted]);
-  };
-
-  const handleEdit = (election) => {
-    setAddElectionDay({
-      Date: election.Date?.split("T")[0],
-      Candidates: election.Candidates,
-      Votes: election.Votes,
-      Winner: election.Winner,
-    });
-    setEditId(election._id);
-    setIsEditing(true);
-
+  const fetchLatestElection = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/admin/getElectionDay");
+      const data = await res.json();
+      if (data.getElecDay?.length > 0) {
+        const sorted = data.getElecDay.sort(
+          (a, b) => new Date(b.Date) - new Date(a.Date)
+        )[0];
+        setLatestElection(sorted);
+      } else {
+        setLatestElection(null);
+      }
+    } catch (err) {
+      console.error("Error fetching latest election:", err);
+    }
   };
 
   useEffect(() => {
-    fetchElectionData();
+    fetchLatestElection();
   }, []);
 
+  
+  const handleAddDate = async () => {
+    if (!newDate) return alert("Please select a date");
+    try {
+      const res = await fetch("http://localhost:5000/admin/addElectionDate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Date: newDate }),
+      });
+      await res.json();
+      alert("Election date added!");
+      setNewDate("");
+      setShowDateInput(false);
+      fetchLatestElection();
+    } catch (err) {
+      console.error("Error adding date:", err);
+    }
+  };
+
+  const handleAddCandidate = async () => {
+    if (!candidateName) return alert("Enter candidate name");
+    if (!latestElection) return alert("No election found");
+
+    try {
+      const res = await fetch("http://localhost:5000/admin/applyCandidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          electionId: latestElection._id,
+          candidateName,
+        }),
+      });
+      await res.json();
+      alert("Candidate added!");
+      setCandidateName("");
+      setShowCandidateInput(false);
+      fetchLatestElection();
+    } catch (err) {
+      console.error("Error adding candidate:", err);
+    }
+  };
+
+
+  const handleAddVote = async (name) => {
+    try {
+      const res = await fetch("http://localhost:5000/admin/addVotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          electionId: latestElection._id,
+          candidateName: name,
+        }),
+      });
+      await res.json();
+      fetchLatestElection();
+    } catch (err) {
+      console.error("Error adding vote:", err);
+    }
+  };
+
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h2 className="text-2xl font-bold text-center mb-4">
-        {editId ? "Edit" : "Add"} Election
-      </h2>
+    <div className="max-w-xl mx-auto p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Election Manager</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-lg p-6 space-y-4"
-      >
-        <input
-          type="date"
-          name="Date"
-          value={addElectionDay.Date}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          type="text"
-          name="Candidates"
-          placeholder="Candidates"
-          value={addElectionDay.Candidates}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          type="number"
-          name="Votes"
-          placeholder="Votes"
-          value={addElectionDay.Votes}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          type="text"
-          name="Winner"
-          placeholder="Winner"
-          value={addElectionDay.Winner}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
-        >
-          {isEditing ? "Update" : "Submit"}
-        </button>
-        {isEditing && (
-          <button
-            type="button"
-            onClick={() => {
-              setAddElectionDay({
-                Date: "",
-                Candidates: "",
-                Votes: "",
-                Winner: "",
-              });
-              setEditId(null);
-              setIsEditing(false);
-            }}
-            className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition"
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
-      <hr className="my-6" />
-
-      <h3 className="text-xl font-semibold text-center mb-4">Election List</h3>
-
-      {elecData.map((el) => (
-        <div
-          key={el._id}
-          className="border border-gray-300 rounded-lg p-4 mb-4 bg-white shadow-sm"
-        >
+     
+      {latestElection && (
+        <div className="p-4 bg-gray-100 rounded">
           <p>
-            <strong>Date:</strong> {new Date(el.Date).toLocaleDateString()}
+            <strong>Latest Election Date:</strong>{" "}
+            {new Date(latestElection.Date).toLocaleDateString("en-GB")}
           </p>
-          <p>
-            <strong>Candidates:</strong> {el.Candidates}
-          </p>
-          <p>
-            <strong>Votes:</strong> {el.Votes}
-          </p>
-          <p>
-            <strong>Winner:</strong> {el.Winner}
-          </p>
-          <button
-            onClick={() => handleEdit(el)}
-            className="mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-200"
-          >
-            Edit
-          </button>
         </div>
-      ))}
+      )}
+
+    
+      <div>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => setShowDateInput(!showDateInput)}
+        >
+          Add Next Election Date
+        </button>
+        {showDateInput && (
+          <div className="mt-2 space-x-2">
+            <input
+              type="date"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+              className="border px-2 py-1 rounded"
+            />
+            <button
+              onClick={handleAddDate}
+              className="bg-green-500 text-white px-4 py-1 rounded"
+            >
+              Done
+            </button>
+          </div>
+        )}
+      </div>
+
+   
+      <div>
+        <button
+          className="bg-purple-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            setShowCandidateInput(!showCandidateInput);
+            setCandidatesList(!candidatesList);
+          }}
+        >
+          Add Candidate
+        </button>
+
+        {candidatesList && latestElection && (
+          <div className="mb-4">
+            
+
+            {showCandidateInput && (
+              <div className="mt-2 space-x-2">
+                <input
+                  type="text"
+                  value={candidateName}
+                  onChange={(e) => setCandidateName(e.target.value)}
+                  placeholder="Candidate name"
+                  className="border px-2 py-1 rounded"
+                />
+                <button
+                  onClick={handleAddCandidate}
+                  className="bg-green-500 text-white px-4 py-1 rounded"
+                >
+                  Add
+                </button>
+              </div>
+            )}
+
+            {candidatesList && latestElection?.Candidates?.length > 0 && (
+              <div>
+                 <h1>Applied Candidates</h1>
+                {latestElection.Candidates.map((c) => (
+                  <div key={c._id}>
+                   
+                    <p>{c.name}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+
+
+          </div>
+        )}
+      </div>
+
+      {/* Step 3: Add Votes */}
+      <div>
+        <button
+          className="bg-yellow-500 text-white px-4 py-2 rounded"
+          onClick={() => setShowVotesList(!showVotesList)}  
+        >
+          
+          Add Votes
+        </button>
+
+        {showVotesList && latestElection?.Candidates?.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {latestElection.Candidates.map((c) => (
+              <div
+                key={c._id}
+                className="flex justify-between items-center border p-2 rounded"
+              >
+                <span>
+                  
+                  {c.name} - {c.votes} votes
+                </span>
+
+                <button
+                  onClick={() => handleAddVote(c.name)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                >
+                  Vote{" "}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default ElectionDay;
+}
