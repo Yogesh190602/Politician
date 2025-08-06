@@ -14,11 +14,14 @@ const nextElection = new mongoose.Schema({
 
 const electionDay = new mongoose.Schema({
   Date: { type: Date },
-  Candidates: { type: String },
-  Votes: { type: Number },
+  Candidates: [{
+      name: { type: String, required: true },
+      votes: { type: Number, default: 0 }
+    }],
   Winner: { type: String },
-  CreatedAt: { type: Date, default: Date.now },
+  CreatedAt: { type: Date, default: Date.now }
 });
+
 
 export const LastElection = mongoose.model("LastElection", lastElection);
 export const NextElection = mongoose.model("NextElection", nextElection);

@@ -1,19 +1,22 @@
 import express from 'express';
 const router = express.Router();
 
-import {  createAdmin, lastelectionDetails, getlastelectionDetails, nextelectionDetails, getnextelectionDetails, electionDay, getElectionDay, editElection} from "../controllers/adminControllers.js";
+import {  createAdmin, electionDay, addElectionDate, applyCandidate, addVotes, setWinner, getElectionDay} from "../controllers/adminControllers.js";
 
 router.post('/createAdmin', createAdmin);
 
-router.post('/lastelectionDetails', lastelectionDetails);
-router.get('/getlastelectionDetails', getlastelectionDetails);
-
-router.post('/nextelectionDetails', nextelectionDetails);
-router.get('/getnextelectionDetails', getnextelectionDetails);
-
 router.post('/electionDay', electionDay);
+
+router.post('/addElectionDate', addElectionDate);
+router.post('/applyCandidate', applyCandidate);
+router.post('/addVotes', addVotes);
+router.post('/setWinner/:id', setWinner);
+
+
 router.get('/getElectionDay', getElectionDay);
-router.put('/editElection/:id', editElection);
+
+
+
 
 
 export default router;

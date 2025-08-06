@@ -1,0 +1,62 @@
+import { useState, useEffect } from "react";
+
+const nextElectionDetails = () => {
+  const [nextElec, setNextElec] = useState([]);
+
+  useEffect(() => {
+    const getNextElection = async () => {
+      try {
+        const nextElection = await fetch(
+          "http://localhost:5000/admin/getElectionDay",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        const data = await nextElection.json();
+
+        if (data.getElecDay?.length > 0) {
+          const sorted = data.getElecDay.sort(
+            (a, b) => new Date(b.Date) - new Date(a.Date)
+          )[1];
+          setNextElec(sorted);
+        }
+
+      } catch (err) {
+        console.error("Unable to fetch next election details", err);
+      }
+    };
+    getNextElection();
+  }, []);
+
+  return (
+    <div>
+      {nextElec&&(
+        <div>
+          <h2>date : {new Date(nextElec.Date).toLocaleDateString("en-GB")}</h2>
+          <p>Winner : {nextElec.Winner}</p>
+        </div>
+      )}
+
+      {nextElec?.Candidates?.length > 0 && (
+        <div>
+          <h1>Applied Candidates</h1>
+          {nextElec.Candidates.map((c) => (
+            <div key={c._id}>
+              <p>{c.name}</p>
+              <p>Votes: {c.votes}</p>
+              
+            </div>
+          ))}
+        </div>
+      )}
+
+    
+
+
+    </div>
+  );
+};
+
+export default nextElectionDetails;

@@ -85,16 +85,6 @@ export async function users(req, res) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 export async function createFunds(req, res) {
   try {
     const UserFunds = new Funds(req.body);

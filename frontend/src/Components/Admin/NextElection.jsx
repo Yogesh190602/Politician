@@ -15,7 +15,6 @@ const nextElectionDetails = () => {
         );
 
         const data = await nextElection.json();
-        console.log("Next Election Data:", data.getElecDay);
 
         if (data.getElecDay?.length > 0) {
           const sorted = data.getElecDay.sort(
@@ -24,12 +23,6 @@ const nextElectionDetails = () => {
           setNextElec(sorted);
         }
 
-        // const sorted = data.getElecDay.sort(
-        //   (a, b) => new Date(b.Date) - new Date(a.Date)
-        // )[0];
-        // // setNextElec(sorted);
-
-        // setNextElec([sorted]);
       } catch (err) {
         console.error("Unable to fetch next election details", err);
       }
@@ -39,11 +32,11 @@ const nextElectionDetails = () => {
 
   return (
     <div>
-      {nextElec.map((election) => (
+      {nextElec&&(
         <div>
-          <h2>date : {new Date(election.Date).toLocaleDateString("en-GB")}</h2>
+          <h2>date : {new Date(nextElec.Date).toLocaleDateString("en-GB")}</h2>
         </div>
-      ))}
+      )}
 
       {nextElec?.Candidates?.length > 0 && (
         <div>
@@ -60,3 +53,5 @@ const nextElectionDetails = () => {
 };
 
 export default nextElectionDetails;
+
+

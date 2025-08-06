@@ -28,83 +28,7 @@ export async function createAdmin(req, res) {
   }
 }
 
-//lastelection
 
-export async function lastelectionDetails(req , res) {
-    try {
-        const LastElec = new LastElection(req.body);
-        await LastElec.save();
-        return res.status(200).json({ LastElec });
-    }
-
-    catch (error) {
-        return res.status(500).json({ message: 'unable to add details' });
-
-    }
-
-}
-
-export async function getlastelectionDetails(req, res) {
-    try{
-        const getLastElec = await LastElection.find();
-        res.status(200).json({ getLastElec });
-    }
-
-    catch (error) {
-        res.status(500).json({ message: 'unable to get details' });
-    }
-
-}
-
-
-export async function editElection(req, res) {
-
-    try {
-        const updatedElection = await ElectionDay.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
-        if (!updatedElection) {
-            return res.status(404).json({ message: 'Election not found' });
-        }
-        return res.status(200).json({ updatedElection });
-    }
-
-    catch (error) {
-        return res.status(500).json({ message: 'unable to update details' });
-    }
-    
-}
-
-
-
-
-
-//nextelection
-
-export async function nextelectionDetails(req , res) {
-    try {
-        const NextElec = new NextElection(req.body);
-        await NextElec.save();
-        return res.status(200).json({ NextElec });
-    }
-    catch(error) {
-        return res.status(500).json({ message: 'unable to add details' });
-    }
-}
-
-export async function getnextelectionDetails(req, res) {
-    try {
-        const getNextElec = await NextElection.find();
-        return res.status(200).json({ getNextElec });
-    }
-    catch(error) {
-        return res.status(500).json({ message: 'unable to get details' });
-    }
-}
-
-//electionday
 
 export async function electionDay(req, res) {
     try{
@@ -120,6 +44,76 @@ export async function electionDay(req, res) {
 
 }
 
+
+export async function addElectionDate (req, res){
+    const {Date} = req.body;
+    try {
+        const newElection = new ElectionDay({ Date, Candidates: [] });
+        await newElection.save();
+        return res.status(200).json({ message: "Election date added successfully", newElection });
+    }   
+
+    catch (error) {
+        return res.status(500).json({ message: "Unable to add election date", error: error.message });
+    }
+}
+
+export async function applyCandidate(req, res) {
+    const { electionId, candidateName } = req.body;
+    try {
+        const election = await ElectionDay.findById(electionId);
+        if (!election) {
+            return res.status(404).json({ message: 'Election not found' });
+        }
+        election.Candidates.push({name: candidateName, votes: 0});
+
+        await election.save();
+        return res.status(200).json({ message: 'Candidate applied successfully' });
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'Unable to apply candidate', error: error.message });
+    }
+}
+
+export async function addVotes(req, res) {
+    const { electionId, candidateName } = req.body;
+    try {
+        const election = await ElectionDay.findById(electionId);
+        if (!election) {
+            return res.status(404).json({ message: 'Election not found' });
+        }
+        const candidate = election.Candidates.find(c => c.name === candidateName);
+        if (!candidate) {
+            return res.status(404).json({ message: 'Candidate not found' });    
+
+        }
+        candidate.votes += 1;
+        await election.save();
+        return res.status(200).json({ message: 'Vote added successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Unable to add vote', error:error.message });
+    }
+}   
+
+export async function setWinner(req, res) {
+    try {
+        const { id } = req.params;
+        const { Winner } = req.body;
+
+        const updatedElection = await ElectionDay.findByIdAndUpdate( id, { Winner }, { new: true } );
+
+        if (!updatedElection) {
+            return res.status(404).json({ message: "Election not found" });
+        }
+
+        return res.status(200).json({ message: "Winner set", election: updatedElection });
+    } catch (error) {
+        return res.status(500).json({ message: "Unable to set winner", error });
+    }
+}
+
+
+
 export async function getElectionDay (req, res) {
     try {
         const getElecDay = await ElectionDay.find();
@@ -129,3 +123,5 @@ export async function getElectionDay (req, res) {
         return res.status(500).json({ message: 'unable to get details' });
     }
 }
+
+
