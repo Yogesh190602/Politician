@@ -71,7 +71,6 @@ export async function getUser(req, res) {
 }
 
 
-
 export async function users(req, res) {
   try {
     const users = await User.find();
@@ -80,8 +79,6 @@ export async function users(req, res) {
     return res.status(500).json({ message: "unable to get user" });
   }
 }
-
-
 
 
 

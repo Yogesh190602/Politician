@@ -65,6 +65,15 @@ export async function applyCandidate(req, res) {
         if (!election) {
             return res.status(404).json({ message: 'Election not found' });
         }
+
+        const alreadyExists = election.Candidates.some(
+            (c) => c.name === candidateName
+        );
+
+        if (alreadyExists) {
+            return res.status(400).json({ message: 'You have already applied as a candidate' });
+        }
+
         election.Candidates.push({name: candidateName, votes: 0});
 
         await election.save();
