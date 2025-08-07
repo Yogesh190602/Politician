@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const electionWinner = () => {
   const [latestElection, setLatestElection] = useState(null);
-  const [winner, setWinner] = useState(false);
+
   const [selectedWinner, setSelectedWinner] = useState("");
 
   const fetchLatestElection = async () => {
@@ -47,14 +47,9 @@ const electionWinner = () => {
 
   return (
     <div>
-      <button
-        className="bg-red-500 text-white px-4 py-2 rounded"
-        onClick={() => setWinner(!winner)}
-      >
-        Set Winner
-      </button>
+     
 
-      {winner && latestElection?.Candidates?.length > 0 && (
+      { latestElection?.Candidates?.length > 0 && (
         <div className="mt-6 p-4 bg-green-50 rounded">
           <h2 className="text-lg font-bold mb-2">Set Winner</h2>
           <select

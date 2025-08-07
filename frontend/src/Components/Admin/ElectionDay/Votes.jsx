@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 const electionVotes = () => {
   const [latestElection, setLatestElection] = useState(null);
-  const  [showVotesList, setShowVotesList] = useState("");
 
   const fetchLatestElection = async () => {
     try {
@@ -46,15 +45,9 @@ const electionVotes = () => {
 
   return (
      
-      <div>
-        <button
-          className="bg-yellow-500 text-white px-4 py-2 rounded"
-          onClick={() => setShowVotesList(!showVotesList)}
-        >
-          Add Votes
-        </button>
+      <div className="p-4">
 
-        {showVotesList && latestElection?.Candidates?.length > 0 && (
+        { latestElection?.Candidates?.length > 0 && (
           <div className="mt-4 space-y-2">
             {latestElection.Candidates.map((c) => (
               <div
