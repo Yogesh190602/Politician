@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 const ElectionVotes = () => {
   const [latestElection, setLatestElection] = useState(null);
   const [isElectionDay, setIsElectionDay] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [votedCandidate, setVotedCandidate] = useState("");
 
   const fetchLatestElection = async () => {
     try {
@@ -21,6 +23,7 @@ const ElectionVotes = () => {
         setIsElectionDay(today === electionDate);
       } else {
         setLatestElection(null);
+
         setIsElectionDay(false);
       }
     } catch (err) {
@@ -32,6 +35,18 @@ const ElectionVotes = () => {
     fetchLatestElection();
   }, []);
 
+  useEffect(() => {
+    const votedId = localStorage.getItem("VotedElectionId");
+    const votedCandidate = localStorage.getItem("VotedCandidate");
+
+    if (latestElection && votedId === latestElection._id) {
+      setHasVoted(true);
+      setVotedCandidate(votedCandidate);
+    } else {
+      setHasVoted(false);
+    }
+  }, [latestElection]);
+
   const handleAddVote = async (name) => {
     try {
       const res = await fetch("http://localhost:5000/admin/addVotes", {
@@ -42,8 +57,17 @@ const ElectionVotes = () => {
           candidateName: name,
         }),
       });
-      await res.json();
-      fetchLatestElection(); // Refresh votes after voting
+
+      const data = await res.json();
+      if (data.message) {
+        alert(data.message);
+        localStorage.setItem("VotedElectionId", latestElection._id);
+        localStorage.setItem("VotedCandidate", name);
+        setHasVoted(true);
+        fetchLatestElection();
+      } else {
+        alert("Failed to add vote.");
+      }
     } catch (err) {
       console.error("Error adding vote:", err);
     }
@@ -51,32 +75,42 @@ const ElectionVotes = () => {
 
   return (
     <div className="p-4">
-      {!isElectionDay && (
+      {hasVoted && latestElection && (
         <p className="text-center text-gray-500">
-          Voting will be available only on the election date.
+          You have already voted for {votedCandidate}.
         </p>
       )}
 
-      {isElectionDay && latestElection?.Candidates?.length > 0 && (
-        <div className="mt-4 space-y-2">
-          {latestElection.Candidates.map((c) => (
-            <div
-              key={c._id}
-              className="flex justify-between items-center border p-2 rounded"
-            >
-              <span>
-                {c.name} - {c.votes} votes
-              </span>
+      {!hasVoted && (
+        <>
+          {!isElectionDay && (
+            <p className="text-center text-gray-500">
+              Voting will be available only on the election date.
+            </p>
+          )}
 
-              <button
-                onClick={() => handleAddVote(c.name)}
-                className="bg-blue-500 text-white px-3 py-1 rounded"
-              >
-                Vote
-              </button>
+          {isElectionDay && latestElection?.Candidates?.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {latestElection.Candidates.map((c) => (
+                <div
+                  key={c._id}
+                  className="flex justify-between items-center border p-2 rounded"
+                >
+                  <span>
+                    {c.name} - {c.votes} votes
+                  </span>
+
+                  <button
+                    onClick={() => handleAddVote(c.name)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                  >
+                    Vote
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );

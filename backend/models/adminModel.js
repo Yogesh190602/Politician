@@ -14,6 +14,10 @@ const nextElection = new mongoose.Schema({
 
 const electionDay = new mongoose.Schema({
   Date: { type: Date },
+  userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
   Candidates: [{
       name: { type: String, required: true },
       votes: { type: Number, default: 0 }
