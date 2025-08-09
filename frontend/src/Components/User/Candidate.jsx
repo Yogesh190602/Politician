@@ -161,6 +161,7 @@ const electionCandidates = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        
         body: JSON.stringify({
           electionId: latestElection._id,
           candidateName,
@@ -208,7 +209,14 @@ const electionCandidates = () => {
             <h3 className="text-lg font-semibold text-blue-800">Current Election</h3>
           </div>
           <p className="text-blue-700">
-            <span className="font-medium">Date:</span> {new Date(latestElection.Date).toLocaleDateString()}
+            <span className="font-medium">Date: </span>
+
+            {new Date(latestElection.Date).toLocaleDateString("en-GB", {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
           </p>
           {latestElection.Title && (
             <p className="text-blue-700">
@@ -322,6 +330,9 @@ const electionCandidates = () => {
           </p>
         </div>
       )}
+
+
+      
 
       {/* No Candidates Yet */}
       {latestElection && latestElection.Candidates?.length === 0 && (

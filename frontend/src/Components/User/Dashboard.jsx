@@ -2,8 +2,6 @@
 // import Candidate from "./Candidate.jsx";
 // import Vote from "./Votes.jsx";
 
-
-
 // const UserDashboard = () => {
 //   const [activeSection, setActiveSection] = useState(null); // 'users' or 'elections'
 
@@ -57,10 +55,10 @@
 
 // export default UserDashboard;
 
-
 // import Candidate from "./Candidate.jsx";
 // import Vote from "./Votes.jsx";
 // import User from "./header.jsx";
+// import Winner from "./Winner.jsx"
 
 // const UserDashboard = () => {
 //   return (
@@ -83,7 +81,11 @@
 //           <Vote />
 //         </div>
 
-        
+//         <div className="w-full max-w-2xl">
+//           <Vote />
+//         </div>
+
+
 //       </div>
 //     </div>
 //   );
@@ -95,12 +97,11 @@ import Candidate from "./Candidate.jsx";
 import Vote from "./Votes.jsx";
 import User from "./header.jsx";
 
+import Winner from "./Winner.jsx"
+
 const UserDashboard = () => {
   return (
-    
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    
-
       {/* Main Content */}
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* User Header Component */}
@@ -111,17 +112,27 @@ const UserDashboard = () => {
         </div>
 
         {/* Main Dashboard Grid */}
+
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Candidate Section */}
           <div className="space-y-6">
             <div className="flex items-center mb-4">
               <div className="bg-blue-500 rounded-full p-2 mr-3">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold text-gray-800">
-                Candidate Management
+                Election details
               </h2>
             </div>
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
@@ -129,13 +140,29 @@ const UserDashboard = () => {
             </div>
           </div>
 
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+              <Winner />
+            </div>
+
           {/* Vote Section */}
           <div className="space-y-6">
             <div className="flex items-center mb-4">
               <div className="bg-green-500 rounded-full p-2 mr-3">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2v1a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clipRule="evenodd" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+                    clipRule="evenodd"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    d="M4 5a2 2 0 012-2v1a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2v1a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold text-gray-800">
@@ -146,9 +173,11 @@ const UserDashboard = () => {
               <Vote />
             </div>
           </div>
-        </div>
 
-        
+          
+
+
+        </div>
       </div>
     </div>
   );

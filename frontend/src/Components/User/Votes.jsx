@@ -77,7 +77,7 @@ const ElectionVotes = () => {
     <div className="p-4">
       {hasVoted && latestElection && (
         <p className="text-center text-gray-500">
-          You have already voted for {votedCandidate}.
+          You have voted for {votedCandidate}.
         </p>
       )}
 

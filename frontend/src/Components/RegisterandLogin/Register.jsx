@@ -127,6 +127,24 @@ const Register = () => {
             Register
           </button>
         </form>
+        <div style={{ marginTop: "1.2rem", textAlign: "center" }}>
+          <span style={{ color: "#666", fontSize: "0.95rem" }}>Already have an account?</span>
+          <button
+            onClick={() => navigate("/login")}
+            style={{
+              marginLeft: "0.5rem",
+              background: "none",
+              color: "#667eea",
+              border: "none",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: "0.95rem",
+              textDecoration: "underline"
+            }}
+          >
+            Login
+          </button>
+        </div>
       </div>
     </div>
   );
